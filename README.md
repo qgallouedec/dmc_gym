@@ -1,5 +1,7 @@
 # DeepMind Control Suite
 
+![](envs.png)
+
 ## Instalation
 
 ```shell
