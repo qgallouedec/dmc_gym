@@ -116,7 +116,7 @@ class DMCEnv(Env):
         reward += time_step.reward
         done = time_step.last()
         if self._from_pixels:
-            obs = self.render("rgb_array")
+            obs = self._env.physics.render(height=84, width=84, camera_id=0)
         else:
             obs = flatten_dict_observation(time_step.observation)
 
@@ -126,14 +126,14 @@ class DMCEnv(Env):
     def reset(self) -> np.ndarray:
         time_step = self._env.reset()
         if self._from_pixels:
-            obs = self.render("rgb_array")
+            obs = self._env.physics.render(height=84, width=84, camera_id=0)
         else:
             obs = flatten_dict_observation(time_step.observation)
         return obs
 
     def render(self, mode: int = "human") -> np.ndarray:
         if mode == "rgb_array":
-            return self._env.physics.render(height=84, width=84, camera_id=0)
+            return self._env.physics.render(height=480, width=480, camera_id=0)
         else:
             if pygame is None:
                 raise ImportError("pygame is not installed, run `pip install pygame`")
