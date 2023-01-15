@@ -118,7 +118,7 @@ class DMCEnv(Env):
         if self._from_pixels:
             obs = self._env.physics.render(height=84, width=84, camera_id=0)
         else:
-            obs = flatten_dict_observation(time_step.observation)
+            obs = flatten_dict_observation(time_step.observation).astype(np.float32)
 
         info = {"internal_state": self._env.physics.get_state(), "discount": time_step.discount}
         return obs, reward, done, info
@@ -128,7 +128,7 @@ class DMCEnv(Env):
         if self._from_pixels:
             obs = self._env.physics.render(height=84, width=84, camera_id=0)
         else:
-            obs = flatten_dict_observation(time_step.observation)
+            obs = flatten_dict_observation(time_step.observation).astype(np.float32)
         return obs
 
     def render(self, mode: int = "human") -> np.ndarray:
