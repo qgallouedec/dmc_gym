@@ -109,7 +109,6 @@ class DMCEnv(Env):
         self.observation_space.seed(seed)
 
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, Dict[str, Any]]:
-        assert self.action_space.contains(action)
         action = self._scale_action(action)
         reward = 0
         time_step = self._env.step(action)  # type: TimeStep
