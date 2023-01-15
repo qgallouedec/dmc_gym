@@ -50,9 +50,24 @@ register(
 )
 
 register(
+    id="CartpoleTwoPolesDMC-v0",
+    entry_point="dmc_gym.dmc_env:DMCEnv",
+    kwargs=dict(domain_name="cartpole", task_name="two_poles"),
+    max_episode_steps=1_000,
+)
+
+register(
+    id="CartpoleThreePolesDMC-v0",
+    entry_point="dmc_gym.dmc_env:DMCEnv",
+    kwargs=dict(domain_name="cartpole", task_name="three_poles"),
+    max_episode_steps=1_000,
+)
+
+
+register(
     id="CheetahDMC-v0",
     entry_point="dmc_gym.dmc_env:DMCEnv",
-    kwargs=dict(domain_name="cheetah", task_name="walk"),
+    kwargs=dict(domain_name="cheetah", task_name="run"),
     max_episode_steps=1_000,
 )
 
@@ -127,9 +142,38 @@ register(
 )
 
 register(
-    id="ManipulatorDMC-v0",
+    id="HumanoidRunPureStateDMC-v0",
+    entry_point="dmc_gym.dmc_env:DMCEnv",
+    kwargs=dict(domain_name="humanoid", task_name="run_pure_state"),
+    max_episode_steps=1_000,
+)
+
+
+register(
+    id="ManipulatorBringBallDMC-v0",
     entry_point="dmc_gym.dmc_env:DMCEnv",
     kwargs=dict(domain_name="manipulator", task_name="bring_ball"),
+    max_episode_steps=1_000,
+)
+
+register(
+    id="ManipulatorBringPegDMC-v0",
+    entry_point="dmc_gym.dmc_env:DMCEnv",
+    kwargs=dict(domain_name="manipulator", task_name="bring_peg"),
+    max_episode_steps=1_000,
+)
+
+register(
+    id="ManipulatorInsertBallDMC-v0",
+    entry_point="dmc_gym.dmc_env:DMCEnv",
+    kwargs=dict(domain_name="manipulator", task_name="insert_ball"),
+    max_episode_steps=1_000,
+)
+
+register(
+    id="ManipulatorInsertPegDMC-v0",
+    entry_point="dmc_gym.dmc_env:DMCEnv",
+    kwargs=dict(domain_name="manipulator", task_name="insert_peg"),
     max_episode_steps=1_000,
 )
 
@@ -144,6 +188,13 @@ register(
     id="PointMassDMC-v0",
     entry_point="dmc_gym.dmc_env:DMCEnv",
     kwargs=dict(domain_name="point_mass", task_name="easy"),
+    max_episode_steps=1_000,
+)
+
+register(
+    id="PointMassHardDMC-v0",
+    entry_point="dmc_gym.dmc_env:DMCEnv",
+    kwargs=dict(domain_name="point_mass", task_name="hard"),
     max_episode_steps=1_000,
 )
 
@@ -195,5 +246,3 @@ register(
     kwargs=dict(domain_name="walker", task_name="walk"),
     max_episode_steps=1_000,
 )
-
-
