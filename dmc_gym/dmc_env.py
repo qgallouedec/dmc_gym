@@ -5,6 +5,11 @@ from dm_control import suite
 from dm_env import TimeStep, specs
 from gym import Env, spaces
 
+try:
+    import pygame
+except:
+    pygame = None
+
 
 def extract_min_max(spec: Union[specs.Array, specs.BoundedArray]) -> Tuple[float, float]:
     """
@@ -62,8 +67,8 @@ def flatten_dict_observation(obs: Dict[str, Union[float, np.ndarray]]) -> np.nda
     return np.concatenate(flattened_obs)
 
 
-class DMCWrapper(Env):
-    metadata = {"render.modes": ["rgb_array"]}
+class DMCEnv(Env):
+    metadata = {"render.modes": ["rgb_array"], "video.frames_per_second": 50}
 
     def __init__(self, domain_name: str, task_name: str, from_pixels: bool = False) -> None:
         self._from_pixels = from_pixels
@@ -83,6 +88,11 @@ class DMCWrapper(Env):
 
         self.reward_range = (0, 1)
 
+        # For humnan rendering
+        self.screen_size = None
+        self.window = None
+        self.clock = None
+
     def __getattr__(self, name: str) -> Any:
         return getattr(self._env, name)
 
@@ -97,7 +107,7 @@ class DMCWrapper(Env):
         self.action_space.seed(seed)
         self.observation_space.seed(seed)
 
-    def step(self, action):
+    def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, Dict[str, Any]]:
         assert self.action_space.contains(action)
         action = self._scale_action(action)
         reward = 0
@@ -112,7 +122,7 @@ class DMCWrapper(Env):
         info = {"internal_state": self._env.physics.get_state(), "discount": time_step.discount}
         return obs, reward, done, info
 
-    def reset(self):
+    def reset(self) -> np.ndarray:
         time_step = self._env.reset()
         if self._from_pixels:
             obs = self.render()
@@ -120,6 +130,38 @@ class DMCWrapper(Env):
             obs = flatten_dict_observation(time_step.observation)
         return obs
 
-    def render(self, mode: int = "rgb_array") -> np.ndarray:
-        assert mode == "rgb_array", "Only support rgb_array mode, given %s" % mode
-        return self._env.physics.render(height=84, width=84, camera_id=0)
+    def render(self, mode: int = "human") -> np.ndarray:
+        if mode == "rgb_array":
+            return self._env.physics.render(height=84, width=84, camera_id=0)
+        else:
+            if pygame is None:
+                raise ImportError("pygame is not installed, run `pip install pygame`")
+
+            rgb_array = self._env.physics.render(height=480, width=480, camera_id=0)
+            rgb_array = np.transpose(rgb_array, axes=(1, 0, 2))
+
+            if self.screen_size is None:
+                self.screen_size = rgb_array.shape[:2]
+
+            assert (
+                self.screen_size == rgb_array.shape[:2]
+            ), f"The shape of the rgb array has changed from {self.screen_size} to {rgb_array.shape[:2]}"
+
+            if self.window is None:
+                pygame.init()
+                pygame.display.init()
+                self.window = pygame.display.set_mode(self.screen_size)
+
+            if self.clock is None:
+                self.clock = pygame.time.Clock()
+
+            surf = pygame.surfarray.make_surface(rgb_array)
+            self.window.blit(surf, (0, 0))
+            pygame.event.pump()
+            self.clock.tick(self.metadata["video.frames_per_second"])
+            pygame.display.flip()
+
+    def close(self):
+        if self.window is not None:
+            pygame.display.quit()
+            pygame.quit()
