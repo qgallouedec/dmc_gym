@@ -50,7 +50,7 @@ def spec_to_box(specs: List[Union[specs.Array, specs.BoundedArray]]) -> spaces.B
         lows.append(low)
         highs.append(high)
     lows, highs = np.concatenate(lows), np.concatenate(highs)
-    return spaces.Box(low, high, dtype=np.float32)
+    return spaces.Box(lows, highs, dtype=np.float32)
 
 
 def flatten_dict_observation(obs: Dict[str, Union[float, np.ndarray]]) -> np.ndarray:
