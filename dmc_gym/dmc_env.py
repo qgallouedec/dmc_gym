@@ -68,7 +68,7 @@ def flatten_dict_observation(obs: Dict[str, Union[float, np.ndarray]]) -> np.nda
 
 
 class DMCEnv(Env):
-    metadata = {"render.modes": ["rgb_array"], "video.frames_per_second": 50}
+    metadata = {"render.modes": ["rgb_array", "human"]}
 
     def __init__(self, domain_name: str, task_name: str, from_pixels: bool = False) -> None:
         self._from_pixels = from_pixels
@@ -92,6 +92,7 @@ class DMCEnv(Env):
         self.screen_size = None
         self.window = None
         self.clock = None
+        self.metadata["video.frames_per_second"] = int(1/self._env.physics.model.opt.timestep)
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self._env, name)
@@ -115,7 +116,7 @@ class DMCEnv(Env):
         reward += time_step.reward
         done = time_step.last()
         if self._from_pixels:
-            obs = self.render()
+            obs = self.render("rgb_array")
         else:
             obs = flatten_dict_observation(time_step.observation)
 
@@ -125,7 +126,7 @@ class DMCEnv(Env):
     def reset(self) -> np.ndarray:
         time_step = self._env.reset()
         if self._from_pixels:
-            obs = self.render()
+            obs = self.render("rgb_array")
         else:
             obs = flatten_dict_observation(time_step.observation)
         return obs
