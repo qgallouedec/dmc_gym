@@ -29,7 +29,8 @@ def extract_min_max(spec: Union[specs.Array, specs.BoundedArray]) -> Tuple[float
         assert isinstance(spec, specs.Array)
         low, high = -np.inf, np.inf
 
-    return low * np.ones(dim, dtype=np.float32), high * np.ones(dim, dtype=np.float32)
+    return (low * np.ones(dim)).astype(np.float32), (high * np.ones(dim)).astype(np.float32)
+
 
 
 def spec_to_box(specs: List[Union[specs.Array, specs.BoundedArray]]) -> spaces.Box:
