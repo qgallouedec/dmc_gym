@@ -23,6 +23,13 @@ while not done:
     obs, reward, done, info = env.step(action)
 ```
 
+To use image as observation space, use `from_pixels`:
+
+```python
+env = gym.make("CartpoleDMC-v0", from_pixels=True)
+env.observation_space.shape  # (84, 84, 3)
+```
+
 ## Environments
 
 - `AcrobotSwingupDMC-v0`
