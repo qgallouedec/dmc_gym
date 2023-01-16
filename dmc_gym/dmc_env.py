@@ -68,7 +68,7 @@ def flatten_dict_observation(obs: Dict[str, Union[float, np.ndarray]]) -> np.nda
 
 
 class DMCEnv(Env):
-    metadata = {"render.modes": ["rgb_array", "human"]}
+    metadata = {"render.modes": ["rgb_array"]}
 
     def __init__(self, domain_name: str, task_name: str, from_pixels: bool = False) -> None:
         self._from_pixels = from_pixels
@@ -130,38 +130,9 @@ class DMCEnv(Env):
             obs = flatten_dict_observation(time_step.observation).astype(np.float32)
         return obs
 
-    def render(self, mode: int = "human") -> np.ndarray:
+    def render(self, mode: int = "rgb_array") -> np.ndarray:
         if mode == "rgb_array":
             return self._env.physics.render(height=480, width=480, camera_id=0)
-        else:
-            if pygame is None:
-                raise ImportError("pygame is not installed, run `pip install pygame`")
+        elif mode=="human":
+            raise NotImplementedError("Help welcomed.")
 
-            rgb_array = self._env.physics.render(height=480, width=480, camera_id=0)
-            rgb_array = np.transpose(rgb_array, axes=(1, 0, 2))
-
-            if self.screen_size is None:
-                self.screen_size = rgb_array.shape[:2]
-
-            assert (
-                self.screen_size == rgb_array.shape[:2]
-            ), f"The shape of the rgb array has changed from {self.screen_size} to {rgb_array.shape[:2]}"
-
-            if self.window is None:
-                pygame.init()
-                pygame.display.init()
-                self.window = pygame.display.set_mode(self.screen_size)
-
-            if self.clock is None:
-                self.clock = pygame.time.Clock()
-
-            surf = pygame.surfarray.make_surface(rgb_array)
-            self.window.blit(surf, (0, 0))
-            pygame.event.pump()
-            self.clock.tick(self.metadata["video.frames_per_second"])
-            pygame.display.flip()
-
-    def close(self):
-        if self.window is not None:
-            pygame.display.quit()
-            pygame.quit()
